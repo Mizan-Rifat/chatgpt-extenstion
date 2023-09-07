@@ -5,23 +5,16 @@ import { attachTwindStyle } from "@src/shared/style/twind";
 
 refreshOnUpdate("pages/content");
 
-const root = document.createElement("div");
-root.id = "chrome-extension-boilerplate-react-vite-content-view-root";
+const textArea = document.querySelector("#prompt-textarea");
 
-document.body.append(root);
+if (textArea) {
+  const micBtnContainer = document.createElement("div");
 
-const rootIntoShadow = document.createElement("div");
-rootIntoShadow.id = "shadow-root";
+  textArea.parentNode.insertBefore(micBtnContainer, textArea.nextSibling);
 
-const shadowRoot = root.attachShadow({ mode: "open" });
-shadowRoot.appendChild(rootIntoShadow);
+  console.log({ textArea });
 
-/**
- * https://github.com/Jonghakseo/chrome-extension-boilerplate-react-vite/pull/174
- *
- * In the firefox environment, the adoptedStyleSheets bug may prevent contentStyle from being applied properly.
- * Please refer to the PR link above and go back to the contentStyle.css implementation, or raise a PR if you have a better way to improve it.
- */
-attachTwindStyle(rootIntoShadow, shadowRoot);
+  attachTwindStyle(micBtnContainer, document);
 
-createRoot(rootIntoShadow).render(<App />);
+  createRoot(micBtnContainer).render(<App />);
+}
