@@ -8,84 +8,77 @@ import classNames from "classnames";
 
 export default function App() {
   const textArea = document.querySelector("#prompt-textarea");
-  const textAreaValueRef = useRef("");
-  const [textAreaValue, setTextAreaValue] = useState("");
+  const textAreaValue = useRef("");
   const [transcriptValue, setTranscriptValue] = useState("");
   const [active, setActive] = useState(false);
   const [disable, setDisable] = useState(false);
 
-  const commands = useMemo(
-    () => [
-      {
-        command: "clear all",
-        callback: ({ resetTranscript }) => {
-          console.log("asdasd");
-          textArea.value = "";
-          textAreaValueRef.current = "";
-          setTranscriptValue("");
-          resetTranscript();
-        },
-      },
-      // {
-      //   command: "reset",
-      //   callback: ({ resetTranscript }) => {
-      //     textArea.value = textAreaValueRef.current;
-      //     setTranscriptValue("");
-      //     resetTranscript();
-      //   },
-      // },
-    ],
-    []
-  );
+  // const commands = useMemo(
+  //   () => [
+  //     {
+  //       command: "clear all",
+  //       callback: ({ resetTranscript }) => {
+  //         console.log("asdasd");
+  //         textArea.value = "";
+  //         textAreaValue.current = "";
+  //         setTranscriptValue("");
+  //         resetTranscript();
+  //       },
+  //     },
+  //     // {
+  //     //   command: "reset",
+  //     //   callback: ({ resetTranscript }) => {
+  //     //     textArea.value = textAreaValue.current;
+  //     //     setTranscriptValue("");
+  //     //     resetTranscript();
+  //     //   },
+  //     // },
+  //   ],
+  //   []
+  // );
 
   const {
     transcript,
     listening,
     resetTranscript,
     browserSupportsSpeechRecognition,
-  } = useSpeechRecognition({ commands });
+  } = useSpeechRecognition();
 
   if (!browserSupportsSpeechRecognition) {
     setDisable(true);
   }
 
-  const handleStartListening = () => {
-    SpeechRecognition.startListening({ continuous: true });
-    const value = textArea.value;
-    textAreaValueRef.current = value;
-    setTextAreaValue(textArea.value);
-  };
-  const handleStopListening = () => {
-    SpeechRecognition.stopListening();
-    resetTranscript();
-    // textAreaValueRef.current = textArea.value;
-    textArea.value = textArea.value + " ";
-  };
-
   const handleClick = () => {
-    if (listening) {
-      handleStartListening();
-    } else {
-      handleStopListening();
-    }
+    SpeechRecognition.startListening();
   };
 
   const handleKeyDown = (event) => {
     if (event.ctrlKey && event.key === "s") {
       event.preventDefault();
-      handleStartListening();
+      SpeechRecognition.startListening({ continuous: true });
     }
   };
 
   const handleKeyUp = (event) => {
     if (event.ctrlKey && event.key === "s") {
       event.preventDefault();
-      handleStopListening();
+      SpeechRecognition.stopListening();
+      resetTranscript();
     }
   };
+  console.log({ textArea });
 
   useEffect(() => {
     setActive(listening);
+    if (listening) {
+      console.log("as", textArea.value);
+
+      textAreaValue.current = textArea.value;
+      console.log("tc", textAreaValue.current);
+    } else {
+      // textArea.value += " ";
+      // textAreaValue.current = "";
+    }
   }, [listening]);
 
   useEffect(() => {
@@ -93,10 +86,7 @@ export default function App() {
   }, [transcript]);
 
   useEffect(() => {
-    console.log("tc", textAreaValue);
-
-    console.log({ transcriptValue });
-    textArea.value = textArea.value + transcriptValue;
+    textArea.value = textAreaValue.current + transcriptValue;
   }, [transcriptValue]);
 
   useEffect(() => {
