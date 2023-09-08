@@ -6,10 +6,10 @@ import SpeechRecognition, {
 } from "react-speech-recognition";
 import classNames from "classnames";
 
+// const textArea = () => document.querySelector("#prompt-textarea");
+
 export default function App() {
-  const textArea = () => document.querySelector("#prompt-textarea");
   const textAreaValue = useRef("");
-  const transcriptValueRef = useRef("");
   const [transcriptValue, setTranscriptValue] = useState("");
   const [active, setActive] = useState(false);
   const [disable, setDisable] = useState(false);
@@ -49,64 +49,79 @@ export default function App() {
     setDisable(true);
   }
 
+  const startListening = () => {
+    SpeechRecognition.startListening({ language: "en-IN", continuous: true });
+  };
+
+  const stopListening = () => {
+    const recognition = SpeechRecognition.getRecognition();
+    if (recognition) {
+      recognition.continuous = false;
+    }
+    SpeechRecognition.abortListening();
+    resetTranscript();
+  };
+
   const handleClick = () => {
-    if (!listening) {
-      SpeechRecognition.startListening({ continuous: true });
+    if (listening) {
+      stopListening();
     } else {
-      SpeechRecognition.stopListening();
-      resetTranscript();
+      startListening();
     }
   };
 
   const handleKeyDown = (event) => {
     if (event.ctrlKey && event.key === "s") {
       event.preventDefault();
-      SpeechRecognition.startListening({ continuous: true });
+      startListening();
     }
   };
 
   const handleKeyUp = (event) => {
     if (event.ctrlKey && event.key === "s") {
       event.preventDefault();
-      SpeechRecognition.stopListening();
-      resetTranscript();
+      stopListening();
     }
   };
 
   useEffect(() => {
-    // console.log({ listening });
+    console.log({ listening });
 
     setActive(listening);
     if (listening) {
       textAreaValue.current = document.querySelector("#prompt-textarea").value;
-      // console.log("tc", textAreaValue.current);
     } else {
-      // textArea.value += " ";
-      // textAreaValue.current = "";
+      document.querySelector("#prompt-textarea").value =
+        document.querySelector("#prompt-textarea").value + " ";
+      resetTranscript();
     }
   }, [listening]);
 
   useEffect(() => {
-    setTranscriptValue(transcript.replace(transcriptValueRef.current, ""));
-    transcriptValueRef.current = transcript;
+    console.log({ transcript });
+
+    setTranscriptValue(transcript);
   }, [transcript]);
 
   useEffect(() => {
-    console.log({ transcriptValue });
+    console.log({ transcriptValue, listening });
 
-    if (transcriptValue) {
-      document.querySelector("#prompt-textarea").value += transcriptValue;
+    if (transcriptValue && listening) {
+      const textArea = document.querySelector("#prompt-textarea");
+      textArea.value = textAreaValue.current + transcriptValue;
+      textArea.style.height =
+        document.querySelector("#prompt-textarea").scrollHeight + "px";
     }
   }, [transcriptValue]);
 
-  // useEffect(() => {
-  //   window.addEventListener("keydown", handleKeyDown);
-  //   window.addEventListener("keyup", handleKeyUp);
-  //   return () => {
-  //     window.removeEventListener("keydown", handleKeyDown);
-  //     window.removeEventListener("keyup", handleKeyUp);
-  //   };
-  // }, []);
+  useEffect(() => {
+    window.addEventListener("keydown", handleKeyDown);
+    window.addEventListener("keyup", handleKeyUp);
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+      window.removeEventListener("keyup", handleKeyUp);
+    };
+  }, []);
 
   return (
     <button
