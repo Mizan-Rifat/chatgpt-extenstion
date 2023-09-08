@@ -15,36 +15,36 @@ export default function App() {
   const [active, setActive] = useState(false);
   const [disable, setDisable] = useState(false);
 
-  // const commands = useMemo(
-  //   () => [
-  //     {
-  //       command: "clear all",
-  //       callback: ({ resetTranscript }) => {
-  //         console.log("asdasd");
-  //         textArea.value = "";
-  //         textAreaValue.current = "";
-  //         setTranscriptValue("");
-  //         resetTranscript();
-  //       },
-  //     },
-  //     // {
-  //     //   command: "reset",
-  //     //   callback: ({ resetTranscript }) => {
-  //     //     textArea.value = textAreaValue.current;
-  //     //     setTranscriptValue("");
-  //     //     resetTranscript();
-  //     //   },
-  //     // },
-  //   ],
-  //   []
-  // );
+  const commands = useMemo(
+    () => [
+      {
+        command: "clear all",
+        callback: ({ resetTranscript }) => {
+          document.querySelector("#prompt-textarea").value = "";
+          textAreaValue.current = "";
+          setTranscriptValue("");
+          resetTranscript();
+        },
+      },
+      {
+        command: "clear",
+        callback: ({ resetTranscript }) => {
+          document.querySelector("#prompt-textarea").value =
+            textAreaValue.current;
+          setTranscriptValue("");
+          resetTranscript();
+        },
+      },
+    ],
+    []
+  );
 
   const {
     transcript,
     listening,
     resetTranscript,
     browserSupportsSpeechRecognition,
-  } = useSpeechRecognition();
+  } = useSpeechRecognition({ commands });
 
   if (!browserSupportsSpeechRecognition) {
     setDisable(true);
@@ -61,6 +61,7 @@ export default function App() {
     }
     SpeechRecognition.abortListening();
     resetTranscript();
+    SpeechRecognition.stopListening();
   };
 
   const handleClick = () => {
