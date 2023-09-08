@@ -10,6 +10,7 @@ import classNames from "classnames";
 
 export default function App() {
   const textAreaValue = useRef("");
+  const cursorPosition = useRef(0);
   const [transcriptValue, setTranscriptValue] = useState("");
   const [active, setActive] = useState(false);
   const [disable, setDisable] = useState(false);
@@ -90,9 +91,13 @@ export default function App() {
     setActive(listening);
     if (listening) {
       textAreaValue.current = document.querySelector("#prompt-textarea").value;
+      cursorPosition.current =
+        document.querySelector("#prompt-textarea").selectionStart;
+
+      console.log({ cursorPosition: cursorPosition.current });
     } else {
-      document.querySelector("#prompt-textarea").value =
-        document.querySelector("#prompt-textarea").value + " ";
+      // document.querySelector("#prompt-textarea").value =
+      //   document.querySelector("#prompt-textarea").value + " ";
       resetTranscript();
     }
   }, [listening]);
@@ -108,7 +113,19 @@ export default function App() {
 
     if (transcriptValue && listening) {
       const textArea = document.querySelector("#prompt-textarea");
-      textArea.value = textAreaValue.current + transcriptValue;
+
+      // textArea.value = `${textAreaValue.current} ${transcriptValue}`;
+
+      textArea.value = `${textAreaValue.current.substring(
+        0,
+        cursorPosition.current
+      )} ${transcriptValue} ${textAreaValue.current.substring(
+        cursorPosition.current
+      )}`;
+
+      textArea.selectionEnd =
+        cursorPosition.current + transcriptValue.length + 1;
+      // cursorPosition.current += transcriptValue.length;
       textArea.style.height =
         document.querySelector("#prompt-textarea").scrollHeight + "px";
     }
