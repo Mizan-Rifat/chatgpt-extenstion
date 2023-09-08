@@ -7,8 +7,9 @@ import SpeechRecognition, {
 import classNames from "classnames";
 
 export default function App() {
-  const textArea = document.querySelector("#prompt-textarea");
+  const textArea = () => document.querySelector("#prompt-textarea");
   const textAreaValue = useRef("");
+  const transcriptValueRef = useRef("");
   const [transcriptValue, setTranscriptValue] = useState("");
   const [active, setActive] = useState(false);
   const [disable, setDisable] = useState(false);
@@ -49,7 +50,12 @@ export default function App() {
   }
 
   const handleClick = () => {
-    SpeechRecognition.startListening();
+    if (!listening) {
+      SpeechRecognition.startListening({ continuous: true });
+    } else {
+      SpeechRecognition.stopListening();
+      resetTranscript();
+    }
   };
 
   const handleKeyDown = (event) => {
@@ -66,15 +72,14 @@ export default function App() {
       resetTranscript();
     }
   };
-  console.log({ textArea });
 
   useEffect(() => {
+    // console.log({ listening });
+
     setActive(listening);
     if (listening) {
-      console.log("as", textArea.value);
-
-      textAreaValue.current = textArea.value;
-      console.log("tc", textAreaValue.current);
+      textAreaValue.current = document.querySelector("#prompt-textarea").value;
+      // console.log("tc", textAreaValue.current);
     } else {
       // textArea.value += " ";
       // textAreaValue.current = "";
@@ -82,21 +87,26 @@ export default function App() {
   }, [listening]);
 
   useEffect(() => {
-    setTranscriptValue(transcript);
+    setTranscriptValue(transcript.replace(transcriptValueRef.current, ""));
+    transcriptValueRef.current = transcript;
   }, [transcript]);
 
   useEffect(() => {
-    textArea.value = textAreaValue.current + transcriptValue;
+    console.log({ transcriptValue });
+
+    if (transcriptValue) {
+      document.querySelector("#prompt-textarea").value += transcriptValue;
+    }
   }, [transcriptValue]);
 
-  useEffect(() => {
-    window.addEventListener("keydown", handleKeyDown);
-    window.addEventListener("keyup", handleKeyUp);
-    return () => {
-      window.removeEventListener("keydown", handleKeyDown);
-      window.removeEventListener("keyup", handleKeyUp);
-    };
-  }, []);
+  // useEffect(() => {
+  //   window.addEventListener("keydown", handleKeyDown);
+  //   window.addEventListener("keyup", handleKeyUp);
+  //   return () => {
+  //     window.removeEventListener("keydown", handleKeyDown);
+  //     window.removeEventListener("keyup", handleKeyUp);
+  //   };
+  // }, []);
 
   return (
     <button
