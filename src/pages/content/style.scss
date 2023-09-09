@@ -7,14 +7,14 @@
 }
 
 .recorder-container {
-  width: 16px;
-  height: 16px;
-  background-color: transparent;
-  display: inline-flex;
-  justify-content: center;
-  align-items: center;
-  border-radius: 100%;
-  cursor: default;
+  // width: 16px;
+  // height: 16px;
+  // background-color: transparent;
+  // display: inline-flex;
+  // justify-content: center;
+  // align-items: center;
+  // border-radius: 100%;
+  // cursor: default;
   transition: 0.3s all ease-in;
   position: relative;
 }
@@ -22,6 +22,8 @@
 .outer {
   width: 14px;
   height: 14px;
+  right: 9px;
+  top: 9px;
   -webkit-transform: scale(1);
   border-radius: 100%;
   position: absolute;
