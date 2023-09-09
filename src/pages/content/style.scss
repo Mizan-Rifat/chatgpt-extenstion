@@ -5,3 +5,44 @@
 .content-view-style-may-be-not-working {
   font-size: 30px;
 }
+
+.recorder-container {
+  width: 16px;
+  height: 16px;
+  background-color: transparent;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 100%;
+  cursor: default;
+  transition: 0.3s all ease-in;
+  position: relative;
+}
+
+.outer {
+  width: 14px;
+  height: 14px;
+  -webkit-transform: scale(1);
+  border-radius: 100%;
+  position: absolute;
+  background-color: transparent;
+  border: 1px solid #7f8c8d;
+  transition: 1.5s all ease;
+  -webkit-animation: woong 1.5s infinite;
+}
+
+@-webkit-keyframes woong {
+  0% {
+    -webkit-trasform: scale(1.2);
+  }
+
+  50% {
+    -webkit-transform: scale(1.8);
+    opacity: 0.5;
+  }
+
+  100% {
+    -webkit-transform: scale(2.4);
+    opacity: 0;
+  }
+}

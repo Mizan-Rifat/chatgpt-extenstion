@@ -133,6 +133,12 @@ export default function App() {
   }, [transcriptValue]);
 
   useEffect(() => {
+    const recognition = SpeechRecognition.getRecognition();
+
+    recognition.addEventListener("speechstart", (event) => {
+      console.log({ event });
+    });
+
     window.addEventListener("keydown", handleKeyDown);
     window.addEventListener("keyup", handleKeyUp);
     return () => {
@@ -142,18 +148,26 @@ export default function App() {
   }, []);
 
   return (
-    <button
-      disabled={disable}
-      type="button"
-      className={classNames(
-        "absolute p-1 rounded-md md:bottom-3 md:p-2 md:right-11 dark:hover:bg-gray-600 dark:disabled:hover:bg-transparent right-2 disabled:text-gray-100 text-white bottom-1.5 transition-colors disabled:opacity-40 h-8 w-8",
-        {
-          "bg-gray-600 ": active,
-        }
-      )}
-      onClick={handleClick}
-    >
-      <Microphone />
-    </button>
+    <>
+      <div className="recorder-container">
+        <div className="outer"></div>
+        <div className="icon-microphone">
+          <Microphone />
+        </div>
+      </div>
+      <button
+        disabled={disable}
+        type="button"
+        className={classNames(
+          "absolute p-1 rounded-md md:bottom-3 md:p-2 md:right-11 dark:hover:bg-gray-600 dark:disabled:hover:bg-transparent right-2 disabled:text-gray-100 text-white bottom-1.5 transition-colors disabled:opacity-40 h-8 w-8",
+          {
+            "bg-gray-600 ": active,
+          }
+        )}
+        onClick={handleClick}
+      >
+        <Microphone />
+      </button>
+    </>
   );
 }
