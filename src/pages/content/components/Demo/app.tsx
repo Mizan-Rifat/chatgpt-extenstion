@@ -11,12 +11,9 @@ import classNames from "classnames";
 export default function App() {
   const textAreaValue = useRef("");
   const cursorPosition = useRef(0);
-  const listeningRef = useRef(false);
-  const transcriptValueRef = useRef("");
   const [transcriptValue, setTranscriptValue] = useState("");
   const [active, setActive] = useState(false);
   const [disable, setDisable] = useState(false);
-  const [speechStarted, setSetspeechStarted] = useState(false);
 
   const commands = useMemo(
     () => [
@@ -81,18 +78,12 @@ export default function App() {
       startListening();
     }
 
-    if (
-      document.activeElement.id === "prompt-textarea" &&
-      listeningRef.current
-    ) {
+    if (document.activeElement.id === "prompt-textarea") {
       cursorPosition.current =
         document.querySelector("#prompt-textarea").selectionStart;
 
-      if (transcriptValueRef.current) {
-        textAreaValue.current =
-          document.querySelector("#prompt-textarea").value;
-        resetTranscript();
-      }
+      textAreaValue.current = document.querySelector("#prompt-textarea").value;
+      resetTranscript();
     }
   };
 
@@ -104,17 +95,12 @@ export default function App() {
   };
 
   useEffect(() => {
-    console.log({ listening });
-
     setActive(listening);
-    listeningRef.current = listening;
     if (listening) {
       document.querySelector("#prompt-textarea").focus();
       textAreaValue.current = document.querySelector("#prompt-textarea").value;
       cursorPosition.current =
         document.querySelector("#prompt-textarea").selectionStart;
-
-      console.log({ cursorPosition: cursorPosition.current });
     } else {
       // document.querySelector("#prompt-textarea").value =
       //   document.querySelector("#prompt-textarea").value + " ";
@@ -124,12 +110,9 @@ export default function App() {
 
   useEffect(() => {
     setTranscriptValue(transcript);
-    transcriptValueRef.current = transcript;
   }, [transcript]);
 
   useEffect(() => {
-    console.log({ transcriptValue, listening });
-
     if (transcriptValue && listening) {
       const textArea = document.querySelector("#prompt-textarea");
 
@@ -139,7 +122,6 @@ export default function App() {
       )} ${transcriptValue} ${textAreaValue.current.substring(
         cursorPosition.current
       )}`;
-      console.log("as");
 
       textArea.selectionEnd =
         cursorPosition.current + transcriptValue.length + 1;
@@ -150,33 +132,19 @@ export default function App() {
   }, [transcriptValue]);
 
   useEffect(() => {
-    const recognition = SpeechRecognition.getRecognition();
-
-    recognition.addEventListener("soundstart", (event) => {
-      console.log({ event });
-      setSetspeechStarted(true);
-    });
-
     document.querySelector("#prompt-textarea").addEventListener("click", () => {
       cursorPosition.current =
         document.querySelector("#prompt-textarea").selectionStart;
 
-      if (transcriptValueRef.current) {
-        textAreaValue.current =
-          document.querySelector("#prompt-textarea").value;
-        resetTranscript();
-      }
+      textAreaValue.current = document.querySelector("#prompt-textarea").value;
+      resetTranscript();
     });
-
-    console.log(document.querySelector("#prompt-textarea"));
 
     document
       .querySelector("#prompt-textarea")
       .addEventListener("keyup", (e) => {
         cursorPosition.current =
           document.querySelector("#prompt-textarea").selectionStart;
-
-        console.log({ asd: cursorPosition.current });
 
         textAreaValue.current =
           document.querySelector("#prompt-textarea").value;
