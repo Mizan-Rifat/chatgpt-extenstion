@@ -11,6 +11,8 @@ import classNames from "classnames";
 export default function App() {
   const textAreaValue = useRef("");
   const cursorPosition = useRef(0);
+  const listeningRef = useRef(false);
+  const transcriptValueRef = useRef("");
   const [transcriptValue, setTranscriptValue] = useState("");
   const [active, setActive] = useState(false);
   const [disable, setDisable] = useState(false);
@@ -78,6 +80,20 @@ export default function App() {
       event.preventDefault();
       startListening();
     }
+
+    if (
+      document.activeElement.id === "prompt-textarea" &&
+      listeningRef.current
+    ) {
+      cursorPosition.current =
+        document.querySelector("#prompt-textarea").selectionStart;
+
+      if (transcriptValueRef.current) {
+        textAreaValue.current =
+          document.querySelector("#prompt-textarea").value;
+        resetTranscript();
+      }
+    }
   };
 
   const handleKeyUp = (event) => {
@@ -91,7 +107,9 @@ export default function App() {
     console.log({ listening });
 
     setActive(listening);
+    listeningRef.current = listening;
     if (listening) {
+      document.querySelector("#prompt-textarea").focus();
       textAreaValue.current = document.querySelector("#prompt-textarea").value;
       cursorPosition.current =
         document.querySelector("#prompt-textarea").selectionStart;
@@ -105,9 +123,8 @@ export default function App() {
   }, [listening]);
 
   useEffect(() => {
-    console.log({ transcript });
-
     setTranscriptValue(transcript);
+    transcriptValueRef.current = transcript;
   }, [transcript]);
 
   useEffect(() => {
@@ -116,14 +133,13 @@ export default function App() {
     if (transcriptValue && listening) {
       const textArea = document.querySelector("#prompt-textarea");
 
-      // textArea.value = `${textAreaValue.current} ${transcriptValue}`;
-
       textArea.value = `${textAreaValue.current.substring(
         0,
         cursorPosition.current
       )} ${transcriptValue} ${textAreaValue.current.substring(
         cursorPosition.current
       )}`;
+      console.log("as");
 
       textArea.selectionEnd =
         cursorPosition.current + transcriptValue.length + 1;
@@ -141,12 +157,38 @@ export default function App() {
       setSetspeechStarted(true);
     });
 
-    window.addEventListener("keydown", handleKeyDown);
-    window.addEventListener("keyup", handleKeyUp);
-    return () => {
-      window.removeEventListener("keydown", handleKeyDown);
-      window.removeEventListener("keyup", handleKeyUp);
-    };
+    document.querySelector("#prompt-textarea").addEventListener("click", () => {
+      cursorPosition.current =
+        document.querySelector("#prompt-textarea").selectionStart;
+
+      if (transcriptValueRef.current) {
+        textAreaValue.current =
+          document.querySelector("#prompt-textarea").value;
+        resetTranscript();
+      }
+    });
+
+    console.log(document.querySelector("#prompt-textarea"));
+
+    document
+      .querySelector("#prompt-textarea")
+      .addEventListener("keyup", (e) => {
+        cursorPosition.current =
+          document.querySelector("#prompt-textarea").selectionStart;
+
+        console.log({ asd: cursorPosition.current });
+
+        textAreaValue.current =
+          document.querySelector("#prompt-textarea").value;
+        resetTranscript();
+      });
+
+    // window.addEventListener("keydown", handleKeyDown);
+    // window.addEventListener("keyup", handleKeyUp);
+    // return () => {
+    //   window.removeEventListener("keydown", handleKeyDown);
+    //   window.removeEventListener("keyup", handleKeyUp);
+    // };
   }, []);
 
   return (
