@@ -123,6 +123,10 @@ export default function App() {
         cursorPosition.current
       )}`;
 
+      // textArea.focus();
+      // document.execCommand("insertText", false, " ");
+      document.execCommand("delete", false, "backward");
+
       textArea.selectionEnd =
         cursorPosition.current + transcriptValue.length + 1;
       // cursorPosition.current += transcriptValue.length;
