@@ -6,7 +6,8 @@ import SpeechRecognition, {
 } from "react-speech-recognition";
 import classNames from "classnames";
 
-// const textArea = () => document.querySelector("#prompt-textarea");
+const getTextArea = () =>
+  document.querySelector("#prompt-textarea") as HTMLInputElement;
 
 export default function App() {
   const textAreaValue = useRef("");
@@ -20,7 +21,7 @@ export default function App() {
       {
         command: "clear all",
         callback: ({ resetTranscript }) => {
-          document.querySelector("#prompt-textarea").value = "";
+          getTextArea().value = "";
           textAreaValue.current = "";
           setTranscriptValue("");
           resetTranscript();
@@ -29,8 +30,7 @@ export default function App() {
       {
         command: "clear",
         callback: ({ resetTranscript }) => {
-          document.querySelector("#prompt-textarea").value =
-            textAreaValue.current;
+          getTextArea().value = textAreaValue.current;
           setTranscriptValue("");
           resetTranscript();
         },
@@ -79,10 +79,9 @@ export default function App() {
     }
 
     if (document.activeElement.id === "prompt-textarea") {
-      cursorPosition.current =
-        document.querySelector("#prompt-textarea").selectionStart;
+      cursorPosition.current = getTextArea().selectionStart;
 
-      textAreaValue.current = document.querySelector("#prompt-textarea").value;
+      textAreaValue.current = getTextArea().value;
       resetTranscript();
     }
   };
@@ -97,13 +96,11 @@ export default function App() {
   useEffect(() => {
     setActive(listening);
     if (listening) {
-      document.querySelector("#prompt-textarea").focus();
-      textAreaValue.current = document.querySelector("#prompt-textarea").value;
-      cursorPosition.current =
-        document.querySelector("#prompt-textarea").selectionStart;
+      const textArea = getTextArea();
+      textArea.focus();
+      textAreaValue.current = textArea.value;
+      cursorPosition.current = textArea.selectionStart;
     } else {
-      // document.querySelector("#prompt-textarea").value =
-      //   document.querySelector("#prompt-textarea").value + " ";
       resetTranscript();
     }
   }, [listening]);
@@ -114,7 +111,7 @@ export default function App() {
 
   useEffect(() => {
     if (transcriptValue && listening) {
-      const textArea = document.querySelector("#prompt-textarea");
+      const textArea = getTextArea();
 
       textArea.value = `${textAreaValue.current.substring(
         0,
@@ -123,37 +120,28 @@ export default function App() {
         cursorPosition.current
       )}`;
 
-      // textArea.focus();
       // document.execCommand("insertText", false, " ");
       document.execCommand("delete", false, "backward");
 
       textArea.selectionEnd =
         cursorPosition.current + transcriptValue.length + 1;
-      // cursorPosition.current += transcriptValue.length;
-      textArea.style.height =
-        document.querySelector("#prompt-textarea").scrollHeight + "px";
+      textArea.style.height = textArea.scrollHeight + "px";
     }
   }, [transcriptValue]);
 
   useEffect(() => {
-    document.querySelector("#prompt-textarea").addEventListener("click", () => {
-      cursorPosition.current =
-        document.querySelector("#prompt-textarea").selectionStart;
-
-      textAreaValue.current = document.querySelector("#prompt-textarea").value;
+    const textArea = getTextArea();
+    textArea.addEventListener("click", () => {
+      cursorPosition.current = textArea.selectionStart;
+      textAreaValue.current = textArea.value;
       resetTranscript();
     });
 
-    document
-      .querySelector("#prompt-textarea")
-      .addEventListener("keyup", (e) => {
-        cursorPosition.current =
-          document.querySelector("#prompt-textarea").selectionStart;
-
-        textAreaValue.current =
-          document.querySelector("#prompt-textarea").value;
-        resetTranscript();
-      });
+    document.querySelector("#prompt-textarea").addEventListener("keyup", () => {
+      cursorPosition.current = textArea.selectionStart;
+      textAreaValue.current = textArea.value;
+      resetTranscript();
+    });
 
     // window.addEventListener("keydown", handleKeyDown);
     // window.addEventListener("keyup", handleKeyUp);
