@@ -77,13 +77,6 @@ export default function App() {
       event.preventDefault();
       startListening();
     }
-
-    if (document.activeElement.id === "prompt-textarea") {
-      cursorPosition.current = getTextArea().selectionStart;
-
-      textAreaValue.current = getTextArea().value;
-      resetTranscript();
-    }
   };
 
   const handleKeyUp = (event) => {
@@ -143,12 +136,12 @@ export default function App() {
       resetTranscript();
     });
 
-    // window.addEventListener("keydown", handleKeyDown);
-    // window.addEventListener("keyup", handleKeyUp);
-    // return () => {
-    //   window.removeEventListener("keydown", handleKeyDown);
-    //   window.removeEventListener("keyup", handleKeyUp);
-    // };
+    window.addEventListener("keydown", handleKeyDown);
+    window.addEventListener("keyup", handleKeyUp);
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+      window.removeEventListener("keyup", handleKeyUp);
+    };
   }, []);
 
   return (
