@@ -12,6 +12,7 @@ const getTextArea = () =>
 export default function App() {
   const textAreaValue = useRef("");
   const cursorPosition = useRef(0);
+  const listeningRef = useRef(false);
   const [transcriptValue, setTranscriptValue] = useState("");
   const [active, setActive] = useState(false);
   const [disable, setDisable] = useState(false);
@@ -77,6 +78,15 @@ export default function App() {
       event.preventDefault();
       startListening();
     }
+
+    if (event.ctrlKey && event.key === " ") {
+      event.preventDefault();
+      if (listeningRef.current) {
+        stopListening();
+      } else {
+        startListening();
+      }
+    }
   };
 
   const handleKeyUp = (event) => {
@@ -88,6 +98,7 @@ export default function App() {
 
   useEffect(() => {
     setActive(listening);
+    listeningRef.current = listening;
     if (listening) {
       const textArea = getTextArea();
       textArea.focus();
