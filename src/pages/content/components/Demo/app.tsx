@@ -13,9 +13,28 @@ export default function App() {
   const textAreaValue = useRef("");
   const cursorPosition = useRef(0);
   const listeningRef = useRef(false);
+  const transcriptRef = useRef(false);
   const [transcriptValue, setTranscriptValue] = useState("");
   const [active, setActive] = useState(false);
   const [disable, setDisable] = useState(false);
+
+  const sendBtn = document.querySelector(
+    '[data-testid="send-button"]'
+  ) as HTMLButtonElement;
+
+  const startListening = () => {
+    SpeechRecognition.startListening({ language: "en-IN", continuous: true });
+  };
+
+  const stopListening = () => {
+    const recognition = SpeechRecognition.getRecognition();
+    if (recognition) {
+      recognition.continuous = false;
+    }
+    SpeechRecognition.abortListening();
+    resetTranscript();
+    SpeechRecognition.stopListening();
+  };
 
   const commands = useMemo(
     () => [
@@ -36,8 +55,26 @@ export default function App() {
           resetTranscript();
         },
       },
+      {
+        command: "stop listening",
+        callback: () => {
+          setTranscriptValue(transcriptValue.replace("stop listening", ""));
+          stopListening();
+        },
+      },
+      {
+        command: "submit",
+        callback: () => {
+          setTranscriptValue(transcriptValue.replace("submit", ""));
+          setTimeout(() => {
+            stopListening();
+            sendBtn.click();
+            getTextArea().value = "";
+          }, 1);
+        },
+      },
     ],
-    []
+    [transcriptValue]
   );
 
   const {
@@ -50,20 +87,6 @@ export default function App() {
   if (!browserSupportsSpeechRecognition) {
     setDisable(true);
   }
-
-  const startListening = () => {
-    SpeechRecognition.startListening({ language: "en-IN", continuous: true });
-  };
-
-  const stopListening = () => {
-    const recognition = SpeechRecognition.getRecognition();
-    if (recognition) {
-      recognition.continuous = false;
-    }
-    SpeechRecognition.abortListening();
-    resetTranscript();
-    SpeechRecognition.stopListening();
-  };
 
   const handleClick = () => {
     if (listening) {
@@ -111,10 +134,11 @@ export default function App() {
 
   useEffect(() => {
     setTranscriptValue(transcript);
+    transcriptRef.current = transcript;
   }, [transcript]);
 
   useEffect(() => {
-    if (transcriptValue && listening) {
+    if (transcriptValue) {
       const textArea = getTextArea();
 
       textArea.value = `${textAreaValue.current.substring(
