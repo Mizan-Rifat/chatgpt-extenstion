@@ -1,6 +1,7 @@
 type Selectors = {
   textarea: string;
   groupContainer: string;
+  groups: string;
 };
 
 type Elements = {
@@ -10,6 +11,7 @@ type Elements = {
 export const selectors: Selectors = {
   textarea: "#prompt-textarea",
   groupContainer: `div[role="presentation"] > div`,
+  groups: '[data-testid^="conversation-turn-"]',
 };
 
 export const classNames = {};

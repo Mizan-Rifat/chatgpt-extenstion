@@ -5,16 +5,35 @@ import { attachTwindStyle } from "@src/shared/style/twind";
 refreshOnUpdate("pages/content");
 import "../../style.scss";
 import { elements, getElements, selectors } from "../../elements";
+import SpeakarButton from "./SpeakarButton";
 
 const { textarea, groupContainer } = elements();
+let initialBtnsAdded = false;
 
-// const groupContainer = getElements(selectors.groupContainer);
-console.log({ groupContainer });
+const addSpeakarButton = (containerEl, isNew) => {
+  const els = containerEl.querySelectorAll("button[class*='gizmo']");
+  const speakerBtnContainer = document.createElement("div");
+  els[els.length - 1].parentNode.append(speakerBtnContainer);
+
+  // attachTwindStyle(speakerBtnContainer, document);
+  createRoot(speakerBtnContainer).render(<SpeakarButton newItem={isNew} />);
+};
 
 const mutationObserver = new MutationObserver((entries) => {
   entries.forEach((entry) => {
-    if (entry.addedNodes.length > 0) {
-      console.log({ entries: entry.addedNodes[0] });
+    if (!initialBtnsAdded) {
+      const groups = getElements(selectors.groups);
+      groups.forEach((group) => {
+        addSpeakarButton(group, false);
+      });
+      initialBtnsAdded = true;
+    }
+
+    if (
+      entry.addedNodes.length > 0 &&
+      entry.addedNodes[0]?.classList?.contains("group")
+    ) {
+      addSpeakarButton(entry.addedNodes[0], true);
     }
   });
 });
