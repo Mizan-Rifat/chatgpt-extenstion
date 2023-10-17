@@ -5,11 +5,18 @@ import SpeechRecognition, {
   useSpeechRecognition,
 } from "react-speech-recognition";
 import classNames from "classnames";
+import { elements } from "../../elements";
 
-const getTextArea = () =>
-  document.querySelector("#prompt-textarea") as HTMLInputElement;
+declare global {
+  interface Window {
+    keydownEventListenerAdded: boolean;
+    keyupEventListenerAdded: boolean;
+  }
+}
 
-export default function App() {
+const getTextArea = () => elements().textarea as HTMLInputElement;
+
+export default function MicButton() {
   const textAreaValue = useRef("");
   const cursorPosition = useRef(0);
   const listeningRef = useRef(false);
@@ -18,9 +25,7 @@ export default function App() {
   const [active, setActive] = useState(false);
   const [disable, setDisable] = useState(false);
 
-  const sendBtn = document.querySelector(
-    '[data-testid="send-button"]'
-  ) as HTMLButtonElement;
+  const { sendButton } = elements();
 
   const startListening = () => {
     SpeechRecognition.startListening({ language: "en-IN", continuous: true });
@@ -68,7 +73,7 @@ export default function App() {
           setTranscriptValue(transcriptValue.replace("submit", ""));
           setTimeout(() => {
             stopListening();
-            sendBtn.click();
+            sendButton.click();
             getTextArea().value = "";
           }, 1);
         },
@@ -171,11 +176,23 @@ export default function App() {
       resetTranscript();
     });
 
-    window.addEventListener("keydown", handleKeyDown);
-    window.addEventListener("keyup", handleKeyUp);
+    if (!window.keydownEventListenerAdded) {
+      window.addEventListener("keydown", handleKeyDown);
+      window.keydownEventListenerAdded = true;
+    }
+    if (!window.keyupEventListenerAdded) {
+      window.addEventListener("keyup", handleKeyUp);
+      window.keyupEventListenerAdded = true;
+    }
     return () => {
-      window.removeEventListener("keydown", handleKeyDown);
-      window.removeEventListener("keyup", handleKeyUp);
+      if (window.keydownEventListenerAdded) {
+        window.removeEventListener("keydown", handleKeyDown);
+        window.keydownEventListenerAdded = false;
+      }
+      if (window.keyupEventListenerAdded) {
+        window.removeEventListener("keyup", handleKeyUp);
+        window.keyupEventListenerAdded = false;
+      }
     };
   }, []);
 
@@ -196,7 +213,7 @@ export default function App() {
           className={classNames({
             outer: listening,
           })}
-        ></span>
+        />
         <span className="icon-microphone">
           <Microphone />
         </span>

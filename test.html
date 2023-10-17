@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Website Scroll Recording</title>
+</head>
+
+<body>
+  <div id="scroll-container" style="height: 2000px;">
+    <!-- Your website content goes here -->
+  </div>
+  <button onclick="startRecording()">Start Recording</button>
+  <button onclick="stopRecording()">Stop Recording</button>
+
+  <script>
+
+    let mediaRecorder;
+    async function startRecording() {
+      let stream = await navigator.mediaDevices.getDisplayMedia({
+        video: true
+      })
+
+      //needed for better browser support
+      const mime = MediaRecorder.isTypeSupported("video/webm; codecs=vp9")
+        ? "video/webm; codecs=vp9"
+        : "video/webm"
+      mediaRecorder = new MediaRecorder(stream, {
+        mimeType: mime
+      })
+      let chunks = []
+      mediaRecorder.addEventListener('dataavailable', function (e) {
+        chunks.push(e.data)
+      })
+
+      mediaRecorder.addEventListener('stop', function () {
+        let blob = new Blob(chunks, {
+          type: chunks[0].type
+        })
+        let a = document.createElement('a')
+        a.href = URL.createObjectURL(blob)
+        a.download = 'video.webm'
+        a.click()
+
+      })
+
+
+      //we have to start the recorder manually
+      mediaRecorder.start()
+    }
+
+    function stopRecording() {
+      mediaRecorder.stop()
+    }
+
+
+  </script>
+</body>
+
+</html>

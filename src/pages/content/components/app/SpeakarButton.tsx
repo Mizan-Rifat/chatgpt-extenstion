@@ -2,12 +2,11 @@ import classNames from "classnames";
 import { useEffect, useRef, useState } from "react";
 import { Speaker, SpeakerOff } from "./Icons";
 
-const SpeakarButton = ({ newItem }: { newItem?: boolean }) => {
+const SpeakarButton = () => {
   const btnRef = useRef(null);
   const synthesisRef = useRef(null);
   const utteranceRef = useRef(null);
   const timerRef = useRef(null);
-  const [speech, setSpeech] = useState("");
   const [speaking, setSpeaking] = useState(false);
 
   const resumeInfinity = (target) => {
@@ -35,7 +34,6 @@ const SpeakarButton = ({ newItem }: { newItem?: boolean }) => {
       }
 
       if (speechText) {
-        setSpeech(speechText || "");
         utteranceRef.current = new SpeechSynthesisUtterance(speechText);
         utteranceRef.current.onstart = () => {
           setSpeaking(true);
@@ -73,9 +71,10 @@ const SpeakarButton = ({ newItem }: { newItem?: boolean }) => {
         synthesisRef.current = synthesisObj;
       }
     }
-    setSpeechText();
-
     return () => {
+      console.log("remove");
+
+      synthesisRef.current.cancel();
       if (timerRef.current) {
         clearInterval(timerRef.current);
       }
@@ -87,10 +86,7 @@ const SpeakarButton = ({ newItem }: { newItem?: boolean }) => {
       ref={btnRef}
       type="button"
       className={classNames(
-        "p-1 gizmo:pl-0 rounded-md disabled:dark:hover:text-gray-400 dark:hover:text-gray-200 dark:text-gray-400 hover:bg-gray-100 hover:text-gray-700 dark:hover:bg-gray-700",
-        {
-          hidden: !speech && !newItem,
-        }
+        "p-1 gizmo:pl-0 rounded-md disabled:dark:hover:text-gray-400 dark:hover:text-gray-200 dark:text-gray-400 hover:bg-gray-100 hover:text-gray-700 dark:hover:bg-gray-700"
       )}
       onClick={handleClick}
     >
