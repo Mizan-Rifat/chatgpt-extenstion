@@ -6,6 +6,7 @@ import SpeechRecognition, {
 } from "react-speech-recognition";
 import classNames from "classnames";
 import { elements } from "../../elements";
+import { getStorageValue } from "../../utils";
 
 declare global {
   interface Window {
@@ -27,8 +28,9 @@ export default function MicButton() {
 
   const { sendButton } = elements();
 
-  const startListening = () => {
-    SpeechRecognition.startListening({ language: "en-IN", continuous: true });
+  const startListening = async () => {
+    const voiceLang = await getStorageValue("voice_lang");
+    SpeechRecognition.startListening({ language: voiceLang, continuous: true });
   };
 
   const stopListening = () => {
@@ -197,7 +199,7 @@ export default function MicButton() {
   }, []);
 
   return (
-    <>
+    <div className="relative">
       <button
         disabled={disable}
         type="button"
@@ -218,6 +220,6 @@ export default function MicButton() {
           <Microphone />
         </span>
       </button>
-    </>
+    </div>
   );
 }

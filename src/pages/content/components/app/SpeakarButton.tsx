@@ -1,6 +1,7 @@
 import classNames from "classnames";
 import { useEffect, useRef, useState } from "react";
 import { Speaker, SpeakerOff } from "./Icons";
+import { getStorageValue } from "../../utils";
 
 const SpeakarButton = () => {
   const btnRef = useRef(null);
@@ -22,8 +23,9 @@ const SpeakarButton = () => {
     }, 14000);
   };
 
-  const setSpeechText = () => {
-    if (!utteranceRef.current) {
+  const setSpeechText = async () => {
+    const speechLang = await getStorageValue("speech_lang");
+    if (!utteranceRef.current || utteranceRef.current?.lang !== speechLang) {
       const group = btnRef.current?.closest(".group");
       let speechText = group?.querySelector(".markdown")?.innerText;
 
@@ -35,6 +37,9 @@ const SpeakarButton = () => {
 
       if (speechText) {
         utteranceRef.current = new SpeechSynthesisUtterance(speechText);
+
+        utteranceRef.current.lang = speechLang;
+
         utteranceRef.current.onstart = () => {
           setSpeaking(true);
           resumeInfinity(utteranceRef.current);
@@ -51,14 +56,14 @@ const SpeakarButton = () => {
     }
   };
 
-  const handleClick = () => {
+  const handleClick = async () => {
     if (!synthesisRef.current) return;
 
     if (speaking) {
       synthesisRef.current.cancel();
       setSpeaking(false);
     } else {
-      setSpeechText();
+      await setSpeechText();
       synthesisRef.current.cancel();
       synthesisRef.current.speak(utteranceRef.current);
     }
@@ -72,8 +77,6 @@ const SpeakarButton = () => {
       }
     }
     return () => {
-      console.log("remove");
-
       synthesisRef.current.cancel();
       if (timerRef.current) {
         clearInterval(timerRef.current);
