@@ -204,9 +204,9 @@ export default function MicButton() {
         disabled={disable}
         type="button"
         className={classNames(
-          "absolute p-1 rounded-md md:bottom-3 md:p-2 md:right-11 dark:hover:bg-gray-600 dark:disabled:hover:bg-transparent right-2 disabled:text-gray-100 text-[#FFFFDF] bottom-1.5 transition-colors disabled:opacity-40 h-8 w-8 recorder-container bg-[#215253]",
+          "absolute p-1 rounded-md md:bottom-3 md:p-2 md:right-11 right-2 disabled:text-gray-100 bottom-1.5 transition-colors disabled:opacity-40 h-8 w-8 recorder-container border border-ext-primary dark:border-ext-seconadry text-ext-primary bg-transparent hover:text-ext-secondary dark:text-ext-secondary  hover:bg-ext-primary flex justify-center items-center",
           {
-            "bg-gray-600 ": active,
+            "bg-ext-primary text-ext-secondary": active,
           }
         )}
         onClick={handleClick}

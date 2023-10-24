@@ -4,4 +4,11 @@ import presetAutoprefix from "@twind/preset-autoprefix";
 
 export default defineConfig({
   presets: [presetAutoprefix(), presetTailwind()],
+  darkMode: "class",
+  theme: {
+    colors: {
+      "ext-primary": "#215253",
+      "ext-secondary": "#FFFFDF",
+    },
+  },
 });
