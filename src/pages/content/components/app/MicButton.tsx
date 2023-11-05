@@ -15,6 +15,8 @@ declare global {
   }
 }
 
+const isMac = window.navigator.userAgent.includes("Mac");
+
 const getTextArea = () => elements().textarea as HTMLInputElement;
 
 export default function MicButton() {
@@ -113,7 +115,7 @@ export default function MicButton() {
       startListening();
     }
 
-    if (event.ctrlKey && event.key === " ") {
+    if (event.ctrlKey && ((isMac && event.key === "b") || event.key === " ")) {
       event.preventDefault();
       if (listeningRef.current) {
         stopListening();
