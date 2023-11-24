@@ -23,7 +23,6 @@ export default function MicButton() {
   const listeningRef = useRef(false);
   const transcriptRef = useRef(false);
   const [transcriptValue, setTranscriptValue] = useState("");
-  const [active, setActive] = useState(false);
   const [disable, setDisable] = useState(false);
 
   const { sendButton } = elements();
@@ -35,6 +34,7 @@ export default function MicButton() {
 
   const stopListening = () => {
     const recognition = SpeechRecognition.getRecognition();
+
     if (recognition) {
       recognition.continuous = false;
     }
@@ -104,6 +104,10 @@ export default function MicButton() {
   };
 
   const handleKeyDown = (event) => {
+    if (event.key === "Enter") {
+      stopListening();
+    }
+
     if (event.ctrlKey && event.key === "s") {
       event.preventDefault();
       startListening();
@@ -127,7 +131,6 @@ export default function MicButton() {
   };
 
   useEffect(() => {
-    setActive(listening);
     listeningRef.current = listening;
     if (listening) {
       const textArea = getTextArea();
@@ -166,6 +169,10 @@ export default function MicButton() {
 
   useEffect(() => {
     const textArea = getTextArea();
+    sendButton.addEventListener("click", () => {
+      stopListening();
+    });
+
     textArea.addEventListener("click", () => {
       cursorPosition.current = textArea.selectionStart;
       textAreaValue.current = textArea.value;
@@ -204,10 +211,7 @@ export default function MicButton() {
         disabled={disable}
         type="button"
         className={classNames(
-          "absolute p-1 rounded-md md:bottom-3 md:p-2 md:right-11 right-2 disabled:text-gray-100 bottom-1.5 transition-colors disabled:opacity-40 h-8 w-8 recorder-container border border-ext-primary dark:border-ext-seconadry text-ext-primary bg-transparent hover:text-ext-secondary dark:text-ext-secondary  hover:bg-ext-primary flex justify-center items-center",
-          {
-            "bg-ext-primary text-ext-secondary": active,
-          }
+          "absolute rounded-md h-[30px] w-[30px] md:bottom-3 right-12 disabled:text-gray-100 bottom-1.5 transition-colors disabled:opacity-40 recorder-container flex justify-center items-center text-ext-secondary bg-ext-primary hover:bg-ext-primary-dark"
         )}
         onClick={handleClick}
       >

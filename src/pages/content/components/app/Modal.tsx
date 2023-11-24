@@ -2,6 +2,7 @@ import { ChangeEvent, useEffect, useState } from "react";
 import { Xmark } from "./Icons";
 import classNames from "classnames";
 import { getStorageValue, setStorageValue } from "../../utils";
+import Portal from "./Portal";
 
 const speechRecognitionLanguages = {
   af: "Afrikaans",
@@ -334,83 +335,82 @@ const Modal = ({
   }, []);
 
   return (
-    <div
-      data-state="open"
-      className={classNames(
-        "bg-gray-300/70 dark:bg-gray-600/70 fixed inset-0",
-        {
+    <Portal>
+      <div
+        data-state="open"
+        className={classNames("bg-black/50 dark:bg-gray-600/70 fixed inset-0", {
           hidden: !open,
-        }
-      )}
-      style={{ pointerEvents: "auto" }}
-    >
-      <div className="grid grid-cols-[10px_1fr_10px] grid-rows-[minmax(10px,_1fr)_auto_minmax(10px,_1fr)] h-full md:grid-rows-[minmax(20px,_1fr)_auto_minmax(20px,_1fr)] overflow-y-auto w-full">
-        <div
-          role="dialog"
-          className="-translate-x-1/2 bg-white col-auto col-start-2 dark:bg-gray-900 left-1/2 md:max-w-[400px] relative rounded-lg row-auto row-start-2 shadow-xl text-left transition-all w-full"
-          style={{ pointerEvents: "auto", maxWidth: 430 }}
-        >
-          <div className="px-4 pb-4 pt-5 sm:p-6 flex items-center justify-between border-b border-black/10 dark:border-white/10">
-            <div className="flex">
-              <div className="flex items-center">
-                <div className="flex flex-col gap-1 text-center sm:text-left">
-                  <h2 className="text-lg font-medium leading-6 text-gray-900 dark:text-gray-200">
-                    Settings
-                  </h2>
+        })}
+        style={{ pointerEvents: "auto" }}
+      >
+        <div className="grid grid-cols-[10px_1fr_10px] grid-rows-[minmax(10px,_1fr)_auto_minmax(10px,_1fr)] h-full md:grid-rows-[minmax(20px,_1fr)_auto_minmax(20px,_1fr)] overflow-y-auto w-full">
+          <div
+            role="dialog"
+            className="-translate-x-1/2 bg-white col-auto col-start-2 dark:bg-gray-900 left-1/2 md:max-w-[400px] relative rounded-lg row-auto row-start-2 shadow-xl text-left transition-all w-full"
+            style={{ pointerEvents: "auto", maxWidth: 430 }}
+          >
+            <div className="px-4 pb-4 pt-5 sm:p-6 flex items-center justify-between border-b border-black/10 dark:border-white/10">
+              <div className="flex">
+                <div className="flex items-center">
+                  <div className="flex flex-col gap-1 text-center sm:text-left">
+                    <h2 className="text-lg font-medium leading-6 text-gray-900 dark:text-gray-200">
+                      Settings
+                    </h2>
+                  </div>
                 </div>
               </div>
-            </div>
-            <button
-              className="text-gray-500 transition hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
-              onClick={handleClose}
-            >
-              <Xmark />
-            </button>
-          </div>
-          <div className="p-4 sm:p-6 sm:pt-4">
-            <div
-              dir="ltr"
-              data-orientation="vertical"
-              className="flex flex-col gap-6 md:flex-row"
-            >
-              <div
-                data-state="active"
-                data-orientation="vertical"
-                role="tabpanel"
-                aria-labelledby="radix-:rf:-trigger-General"
-                id="radix-:rf:-content-General"
-                tabIndex={0}
-                className="w-full"
-                style={{}}
+              <button
+                className="text-gray-500 transition hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+                onClick={handleClose}
               >
-                <div className="flex flex-col gap-3 text-sm text-token-text-secondary">
-                  <SelectBox
-                    label="Text-to-Speech Language"
-                    options={speechSynthesisLanguages}
-                    value={speechLang}
-                    onChange={(e) => {
-                      const val = e.target.value;
-                      setSpeechLang(val);
-                      setStorageValue({ speech_lang: val });
-                    }}
-                  />
-                  <SelectBox
-                    label="Speech-to-Text Language"
-                    options={speechRecognitionLanguages}
-                    value={voiceLang}
-                    onChange={(e) => {
-                      const val = e.target.value;
-                      setVoiceLang(val);
-                      setStorageValue({ voice_lang: val });
-                    }}
-                  />
+                <Xmark />
+              </button>
+            </div>
+            <div className="p-4 sm:p-6 sm:pt-4">
+              <div
+                dir="ltr"
+                data-orientation="vertical"
+                className="flex flex-col gap-6 md:flex-row"
+              >
+                <div
+                  data-state="active"
+                  data-orientation="vertical"
+                  role="tabpanel"
+                  aria-labelledby="radix-:rf:-trigger-General"
+                  id="radix-:rf:-content-General"
+                  tabIndex={0}
+                  className="w-full"
+                  style={{}}
+                >
+                  <div className="flex flex-col gap-3 text-sm text-token-text-primary">
+                    <SelectBox
+                      label="Text-to-Speech Language"
+                      options={speechSynthesisLanguages}
+                      value={speechLang}
+                      onChange={(e) => {
+                        const val = e.target.value;
+                        setSpeechLang(val);
+                        setStorageValue({ speech_lang: val });
+                      }}
+                    />
+                    <SelectBox
+                      label="Speech-to-Text Language"
+                      options={speechRecognitionLanguages}
+                      value={voiceLang}
+                      onChange={(e) => {
+                        const val = e.target.value;
+                        setVoiceLang(val);
+                        setStorageValue({ voice_lang: val });
+                      }}
+                    />
+                  </div>
                 </div>
               </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
+    </Portal>
   );
 };
 
@@ -426,7 +426,7 @@ const SelectBox = ({
   onChange: (e: ChangeEvent<HTMLSelectElement>) => void;
 }) => {
   return (
-    <div className="border-b pb-3 dark:border-gray-700">
+    <div className="border-b border-token-border-light pb-3">
       <div className="flex items-center justify-between">
         <div>{label}</div>
         <select

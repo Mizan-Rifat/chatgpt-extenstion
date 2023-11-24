@@ -7,15 +7,13 @@ const SettingsButton = () => {
   return (
     <>
       <button
-        className="fixed bottom-5 z-10 flex items-center justify-center rounded-full border border-gray-200 bg-gray-50 dark:border-white/10 dark:bg-white/10 dark:text-gray-200 "
-        id="headlessui-menu-button-:rg:"
+        className="fixed z-10 flex items-center justify-center rounded-full bottom-3 right-12 text-ext-secondary bg-ext-primary hover:bg-ext-primary-dark flex justify-center items-center h-[26px] w-[26px]"
         type="button"
-        style={{ right: 48 }}
         onClick={() => setOpenModal(true)}
       >
-        <div className="h-6 w-6 flex justify-center items-center">
-          <Language />
-        </div>
+        {/* <div className="h-5 w-5 flex justify-center items-center"> */}
+        <Language />
+        {/* </div> */}
       </button>
 
       <Modal open={openModal} handleClose={() => setOpenModal(false)} />

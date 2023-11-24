@@ -89,7 +89,7 @@ const SpeakarButton = () => {
       ref={btnRef}
       type="button"
       className={classNames(
-        "p-1 gizmo:pl-0 rounded-md disabled:dark:hover:text-gray-400 dark:hover:text-gray-200 text-gray-500 dark:text-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:hover:bg-gray-700"
+        "p-1 gizmo:pl-0 rounded-md disabled:dark:hover:text-gray-400 dark:hover:text-gray-200 dark:text-gray-400 text-gray-400 hover:text-gray-950 md:invisible md:group-hover:visible md:group-[.final-completion]:visible"
       )}
       onClick={handleClick}
     >

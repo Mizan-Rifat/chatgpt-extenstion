@@ -8,6 +8,7 @@ refreshOnUpdate("pages/content");
 import "../../style.scss";
 import { classNames, elements, getElements, selectors } from "../../elements";
 import { getStorageValue, setStorageValue } from "../../utils";
+import { ReactNode } from "react";
 
 const { groupContainer } = elements();
 
@@ -27,15 +28,29 @@ chrome.runtime.onMessage.addListener(({ chatId }) => {
   }
 });
 
+const attchShadowDom = (node: ReactNode) => {
+  const root = document.createElement("div");
+  const shadowRoot = root.attachShadow({ mode: "open" });
+
+  const rootIntoShadow = document.createElement("div");
+  shadowRoot.appendChild(rootIntoShadow);
+
+  attachTwindStyle(rootIntoShadow, shadowRoot);
+  createRoot(rootIntoShadow).render(node);
+
+  return { root, shadowRoot };
+};
+
 const addSpeakarButton = (containerEl) => {
   window.speechSynthesis.cancel();
   const els = containerEl.querySelectorAll(selectors.actionButtons);
 
-  const speakerBtnContainer = document.createElement("div");
-  speakerBtnContainer.classList.add(classNames.speakerBtnContainer);
-  els[els.length - 1].parentNode.append(speakerBtnContainer);
-
-  createRoot(speakerBtnContainer).render(<SpeakarButton />);
+  if (els.length > 0) {
+    const speakerBtnContainer = document.createElement("div");
+    speakerBtnContainer.classList.add(classNames.speakerBtnContainer);
+    els[els.length - 1].parentNode.append(speakerBtnContainer);
+    createRoot(speakerBtnContainer).render(<SpeakarButton />);
+  }
 };
 
 const addMicBtn = () => {
@@ -51,7 +66,6 @@ const addMicBtn = () => {
     createRoot(micBtnContainerDiv).render(<MicButton />);
   }
 };
-
 const mutationObserver = new MutationObserver((entries) => {
   entries.forEach((entry) => {
     const addedNodes = Array.from(entry.addedNodes) as HTMLElement[];
@@ -78,13 +92,10 @@ mutationObserver.observe(groupContainer, {
 
 addMicBtn();
 
-const modalContainer = document.createElement("div");
+const { root: modalContainer } = attchShadowDom(<SettingsButton />);
 document.body.append(modalContainer);
-// attachTwindStyle(modalContainer, document);
-createRoot(modalContainer).render(<SettingsButton />);
 
 (async () => {
-  // const speechLang = await getStorageValue("speech_lang");
   const voiceLang = await getStorageValue("voice_lang");
   const speechLang = await getStorageValue("speech_lang");
   if (!voiceLang) {
