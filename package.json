@@ -1,7 +1,7 @@
 {
-  "name": "chrome-extension-chatgpt",
-  "version": "0.0.1",
-  "description": "chrome extension boilerplate",
+  "name": "voicechat-gpt",
+  "version": "1.0.0",
+  "description": "Voice chat for ChatGPT",
   "license": "MIT",
   "repository": {
     "type": "git",
