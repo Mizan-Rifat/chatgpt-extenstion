@@ -106,7 +106,7 @@ export default function MicButton() {
   };
 
   const handleKeyDown = (event) => {
-    if (event.key === "Enter") {
+    if (!event.shiftKey && event.key === "Enter") {
       stopListening();
     }
 

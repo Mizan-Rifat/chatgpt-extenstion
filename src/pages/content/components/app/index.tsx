@@ -16,7 +16,7 @@ let initializedChatId = "";
 
 chrome.runtime.onMessage.addListener(({ chatId }) => {
   addMicBtn();
-  if (initializedChatId !== chatId) {
+  if (chatId !== "home" && initializedChatId !== chatId) {
     const groups = getElements(selectors.groups);
 
     if (groups.length > 0) {
@@ -45,10 +45,12 @@ const addSpeakarButton = (containerEl) => {
   window.speechSynthesis.cancel();
   const els = containerEl.querySelectorAll(selectors.actionButtons);
 
+  console.log({ containerEl, els });
+
   if (els.length > 0) {
     const speakerBtnContainer = document.createElement("div");
     speakerBtnContainer.classList.add(classNames.speakerBtnContainer);
-    els[els.length - 1].parentNode.append(speakerBtnContainer);
+    els[els.length - 1].append(speakerBtnContainer);
     createRoot(speakerBtnContainer).render(<SpeakarButton />);
   }
 };
@@ -68,19 +70,14 @@ const addMicBtn = () => {
 };
 const mutationObserver = new MutationObserver((entries) => {
   entries.forEach((entry) => {
-    const addedNodes = Array.from(entry.addedNodes) as HTMLElement[];
-    if (addedNodes.length > 0 && addedNodes[0]?.classList?.contains("group")) {
-      addSpeakarButton(addedNodes[0]);
+    if (entry.type === "attributes" && entry.attributeName === "class") {
+      console.log({ entry });
     }
-    if (
-      addedNodes.length > 0 &&
-      addedNodes[0]?.classList?.contains("markdown")
-    ) {
-      const containerEl = addedNodes[0].closest(".group");
-      if (containerEl.querySelector(selectors.speakerBtnContainer)) {
-        containerEl.querySelector(selectors.speakerBtnContainer).remove();
-      }
-      addSpeakarButton(containerEl);
+
+    const addedNodes = Array.from(entry.addedNodes) as HTMLElement[];
+
+    if (addedNodes.length > 0 && addedNodes[0]?.getAttribute("data-testid")) {
+      addSpeakarButton(addedNodes[0]);
     }
   });
 });
@@ -88,6 +85,7 @@ const mutationObserver = new MutationObserver((entries) => {
 mutationObserver.observe(groupContainer, {
   childList: true,
   subtree: true,
+  attributes: true,
 });
 
 addMicBtn();

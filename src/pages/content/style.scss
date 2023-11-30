@@ -23,6 +23,9 @@
   -webkit-animation: woong 1.5s infinite;
 }
 
+.speaker-btn-container {
+  display: inline-flex;
+}
 @-webkit-keyframes woong {
   0% {
     -webkit-trasform: scale(1.2);

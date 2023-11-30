@@ -19,7 +19,7 @@ export const selectors: Selectors = {
   speakerBtnContainer: ".speaker-btn-container",
   micBtnContainer: ".mic-btn-container",
   sendButton: "[data-testid='send-button']",
-  actionButtons: "button[class*='gizmo']",
+  actionButtons: ".visible",
 };
 
 export const classNames = {
