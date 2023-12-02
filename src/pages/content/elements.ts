@@ -1,11 +1,12 @@
 type Selectors = {
   textarea: string;
-  groupContainer: string;
   groups: string;
   speakerBtnContainer: string;
   micBtnContainer: string;
   sendButton: string;
   actionButtons: string;
+  main: string;
+  stopGenerating: string;
 };
 
 type Elements = {
@@ -14,12 +15,13 @@ type Elements = {
 
 export const selectors: Selectors = {
   textarea: "#prompt-textarea",
-  groupContainer: `div[role="presentation"] > div`,
   groups: '[data-testid^="conversation-turn-"]',
   speakerBtnContainer: ".speaker-btn-container",
   micBtnContainer: ".mic-btn-container",
   sendButton: "[data-testid='send-button']",
   actionButtons: ".visible",
+  main: "main",
+  stopGenerating: `[aria-label="Stop generating"]`,
 };
 
 export const classNames = {

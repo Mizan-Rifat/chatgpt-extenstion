@@ -354,7 +354,7 @@ const Modal = ({
                 <div className="flex items-center">
                   <div className="flex flex-col gap-1 text-center sm:text-left">
                     <h2 className="text-lg font-medium leading-6 text-gray-900 dark:text-gray-200">
-                      VoiceChat-GPT Settings
+                      VoiceGPT Settings
                     </h2>
                   </div>
                 </div>
