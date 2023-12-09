@@ -1,5 +1,5 @@
 import "regenerator-runtime/runtime";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Microphone } from "./Icons";
 import SpeechRecognition, {
   useSpeechRecognition,
@@ -23,11 +23,18 @@ export default function MicButton() {
   const textAreaValue = useRef("");
   const cursorPosition = useRef(0);
   const listeningRef = useRef(false);
-  const transcriptRef = useRef(false);
   const [transcriptValue, setTranscriptValue] = useState("");
   const [disable, setDisable] = useState(false);
+  const autoSubmitTimeout = useRef(null);
 
   const { sendButton } = elements();
+
+  const clearAutoSubmitTimeout = useCallback(() => {
+    if (autoSubmitTimeout.current) {
+      clearTimeout(autoSubmitTimeout.current);
+      autoSubmitTimeout.current = null;
+    }
+  }, []);
 
   const startListening = async () => {
     const voiceLang = await getStorageValue("voice_lang");
@@ -35,6 +42,7 @@ export default function MicButton() {
   };
 
   const stopListening = () => {
+    clearAutoSubmitTimeout();
     const recognition = SpeechRecognition.getRecognition();
 
     if (recognition) {
@@ -97,6 +105,25 @@ export default function MicButton() {
     setDisable(true);
   }
 
+  const initAutoSubmitTimeout = useCallback(async () => {
+    const auto_submit = await getStorageValue("auto_submit");
+    const auto_submit_delay = await getStorageValue("auto_submit_delay");
+
+    if (listening && auto_submit) {
+      clearAutoSubmitTimeout();
+      autoSubmitTimeout.current = setTimeout(() => {
+        const textArea = getTextArea();
+        if (textArea.value.trim()) {
+          const { sendButton } = elements();
+          if (sendButton) {
+            resetTranscript();
+            sendButton.click();
+          }
+        }
+      }, auto_submit_delay * 1000);
+    }
+  }, [listening]);
+
   const handleClick = () => {
     if (listening) {
       stopListening();
@@ -106,6 +133,8 @@ export default function MicButton() {
   };
 
   const handleKeyDown = (event) => {
+    clearAutoSubmitTimeout();
+
     if (!event.shiftKey && event.key === "Enter") {
       stopListening();
     }
@@ -125,10 +154,18 @@ export default function MicButton() {
     }
   };
 
-  const handleKeyUp = (event) => {
+  const handleKeyUp = async (event) => {
     if (event.ctrlKey && event.key === "s") {
+      const auto_submit = await getStorageValue("auto_submit");
       event.preventDefault();
       stopListening();
+      if (auto_submit) {
+        const { sendButton } = elements();
+        if (sendButton) {
+          resetTranscript();
+          sendButton.click();
+        }
+      }
     }
   };
 
@@ -146,7 +183,7 @@ export default function MicButton() {
 
   useEffect(() => {
     setTranscriptValue(transcript);
-    transcriptRef.current = transcript;
+    // transcriptRef.current = transcript;
   }, [transcript]);
 
   useEffect(() => {
@@ -166,13 +203,18 @@ export default function MicButton() {
       textArea.selectionEnd =
         cursorPosition.current + transcriptValue.length + 1;
       textArea.style.height = textArea.scrollHeight + "px";
+
+      initAutoSubmitTimeout();
     }
   }, [transcriptValue]);
 
   useEffect(() => {
     const textArea = getTextArea();
-    sendButton.addEventListener("click", () => {
-      stopListening();
+    sendButton.addEventListener("click", async () => {
+      const auto_submit = await getStorageValue("auto_submit");
+      if (!auto_submit) {
+        stopListening();
+      }
     });
 
     textArea.addEventListener("click", () => {

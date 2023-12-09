@@ -3,6 +3,7 @@ import { Xmark } from "./Icons";
 import classNames from "classnames";
 import { getStorageValue, setStorageValue } from "../../utils";
 import Portal from "./Portal";
+import ShortCuts from "./ShortCuts";
 
 const speechRecognitionLanguages = {
   af: "Afrikaans",
@@ -315,7 +316,15 @@ const speechSynthesisLanguages = {
   "zu-ZA": "Zulu (South Africa)",
 };
 
-const Modal = ({
+const autoSubmitDelayValues = {
+  "1": 1,
+  "2": 2,
+  "3": 2,
+  "4": 4,
+  "5": 5,
+};
+
+const SettingsModal = ({
   open,
   handleClose,
 }: {
@@ -324,13 +333,19 @@ const Modal = ({
 }) => {
   const [voiceLang, setVoiceLang] = useState("");
   const [speechLang, setSpeechLang] = useState("");
+  const [autoSubmit, setAutoSubmit] = useState(false);
+  const [autoSubmitDelay, setAutoSubmitDelay] = useState(3);
 
   useEffect(() => {
     (async () => {
-      const voice_lang = await getStorageValue("voice_lang");
-      const speech_lang = await getStorageValue("speech_lang");
+      const voice_lang = (await getStorageValue("voice_lang")) || "en-US";
+      const speech_lang = (await getStorageValue("speech_lang")) || "en-US";
+      const auto_submit = await getStorageValue("auto_submit");
+      const auto_submit_delay = await getStorageValue("auto_submit_delay");
       setVoiceLang(voice_lang);
       setSpeechLang(speech_lang);
+      setAutoSubmit(auto_submit);
+      setAutoSubmitDelay(auto_submit_delay);
     })();
   }, []);
 
@@ -338,23 +353,26 @@ const Modal = ({
     <Portal>
       <div
         data-state="open"
-        className={classNames("bg-black/50 dark:bg-gray-600/70 fixed inset-0", {
-          hidden: !open,
-        })}
+        className={classNames(
+          "bg-black/50 dark:bg-gray-600/70 fixed inset-0 z-50",
+          {
+            hidden: !open,
+          }
+        )}
         style={{ pointerEvents: "auto" }}
       >
         <div className="grid grid-cols-[10px_1fr_10px] grid-rows-[minmax(10px,_1fr)_auto_minmax(10px,_1fr)] h-full md:grid-rows-[minmax(20px,_1fr)_auto_minmax(20px,_1fr)] overflow-y-auto w-full">
           <div
             role="dialog"
-            className="-translate-x-1/2 bg-white col-auto col-start-2 dark:bg-gray-900 left-1/2 md:max-w-[400px] relative rounded-lg row-auto row-start-2 shadow-xl text-left transition-all w-full"
-            style={{ pointerEvents: "auto", maxWidth: 430 }}
+            className="-translate-x-1/2 bg-white col-auto col-start-2 dark:bg-gray-900 left-1/2  relative rounded-lg row-auto row-start-2 shadow-xl text-left transition-all max-w-lg lg:max-w-[896px]"
+            style={{ pointerEvents: "auto" }}
           >
             <div className="px-4 pb-4 pt-5 sm:p-6 flex items-center justify-between border-b border-black/10 dark:border-white/10">
               <div className="flex">
                 <div className="flex items-center">
                   <div className="flex flex-col gap-1 text-center sm:text-left">
                     <h2 className="text-lg font-medium leading-6 text-gray-900 dark:text-gray-200">
-                      VoiceChat-GPT Settings
+                      VoiceGPT
                     </h2>
                   </div>
                 </div>
@@ -366,46 +384,107 @@ const Modal = ({
                 <Xmark />
               </button>
             </div>
-            <div className="p-4 sm:p-6 sm:pt-4">
-              <div
-                dir="ltr"
-                data-orientation="vertical"
-                className="flex flex-col gap-6 md:flex-row"
-              >
+
+            <div className="flex flex-col lg:flex-row gap-6 p-4 sm:p-6 sm:pt-4">
+              <div className="">
                 <div
-                  data-state="active"
+                  dir="ltr"
                   data-orientation="vertical"
-                  role="tabpanel"
-                  aria-labelledby="radix-:rf:-trigger-General"
-                  id="radix-:rf:-content-General"
-                  tabIndex={0}
-                  className="w-full"
-                  style={{}}
+                  className="flex flex-col gap-6 md:flex-row"
                 >
-                  <div className="flex flex-col gap-3 text-sm text-token-text-primary">
-                    <SelectBox
-                      label="Text-to-Speech Language"
-                      options={speechSynthesisLanguages}
-                      value={speechLang}
-                      onChange={(e) => {
-                        const val = e.target.value;
-                        setSpeechLang(val);
-                        setStorageValue({ speech_lang: val });
-                      }}
-                    />
-                    <SelectBox
-                      label="Speech-to-Text Language"
-                      options={speechRecognitionLanguages}
-                      value={voiceLang}
-                      onChange={(e) => {
-                        const val = e.target.value;
-                        setVoiceLang(val);
-                        setStorageValue({ voice_lang: val });
-                      }}
-                    />
+                  <div
+                    data-state="active"
+                    data-orientation="vertical"
+                    role="tabpanel"
+                    aria-labelledby="radix-:rf:-trigger-General"
+                    id="radix-:rf:-content-General"
+                    tabIndex={0}
+                    className="w-full"
+                    style={{}}
+                  >
+                    <div className="flex flex-col gap-3 text-sm text-token-text-primary">
+                      {/* ------------------------------------ */}
+                      <div className="border-b border-token-border-light pb-3 last-of-type:border-b-0">
+                        <div className="flex items-center justify-between">
+                          <div>Auto Submit</div>
+                          <button
+                            // type="button"
+                            role="switch"
+                            className={classNames(
+                              "cursor-pointer relative shrink-0  rounded-full h-[25px] w-[42px]",
+                              {
+                                "bg-gray-800": !autoSubmit,
+                                "bg-green-600": autoSubmit,
+                              }
+                            )}
+                            onClick={() => {
+                              setAutoSubmit(!autoSubmit);
+                              setStorageValue({ auto_submit: !autoSubmit });
+                            }}
+                          >
+                            {/* radix-state-checked:bg-green-600 */}
+                            <span
+                              data-state="checked"
+                              className={classNames(
+                                "flex items-center justify-center rounded-full translate-x-0.5 transition-transform duration-100 will-change-transform bg-white shadow-[0_1px_2px_rgba(0,0,0,0.45)] h-[21px] w-[21px]",
+                                {
+                                  "radix-state-checked:translate-x-[19px]":
+                                    autoSubmit,
+                                }
+                              )}
+                              // radix-state-checked:translate-x-[19px]"
+                            />
+                          </button>
+                        </div>
+                        <div className="text-xs text-token-text-secondary pr-12">
+                          The auto-submit feature in VoiceGPT is
+                          context-sensitive. It's disabled while typing and
+                          activates when you switch to voice input. If you
+                          return to typing, auto-submit stays inactive until you
+                          start talking again,
+                        </div>
+                      </div>
+
+                      <SelectBox
+                        label="Auto-Submit Delay (seconds)"
+                        options={autoSubmitDelayValues}
+                        value={autoSubmitDelay}
+                        varint="seconadry"
+                        onChange={(e) => {
+                          const val = e.target.value;
+                          setAutoSubmitDelay(Number(val));
+                          setStorageValue({ auto_submit_delay: Number(val) });
+                        }}
+                      />
+
+                      <SelectBox
+                        label="Text-to-Speech Language"
+                        options={speechSynthesisLanguages}
+                        value={speechLang}
+                        onChange={(e) => {
+                          const val = e.target.value;
+                          setSpeechLang(val);
+                          setStorageValue({ speech_lang: val });
+                        }}
+                      />
+                      <SelectBox
+                        label="Speech-to-Text Language"
+                        options={speechRecognitionLanguages}
+                        value={voiceLang}
+                        onChange={(e) => {
+                          const val = e.target.value;
+                          setVoiceLang(val);
+                          setStorageValue({ voice_lang: val });
+                        }}
+                      />
+                    </div>
                   </div>
                 </div>
               </div>
+
+              <div className="border-r border-black/10 dark:border-white/10 hidden lg:flex"></div>
+
+              <ShortCuts />
             </div>
           </div>
         </div>
@@ -419,11 +498,13 @@ const SelectBox = ({
   options,
   value,
   onChange,
+  varint = "primary",
 }: {
   label: string;
-  options: { [key: string]: string };
-  value: string;
+  options: { [key: string]: string | number };
+  value: string | number;
   onChange: (e: ChangeEvent<HTMLSelectElement>) => void;
+  varint?: "primary" | "seconadry";
 }) => {
   return (
     <div className="border-b border-token-border-light pb-3">
@@ -436,7 +517,7 @@ const SelectBox = ({
         >
           {Object.keys(options).map((option) => (
             <option value={option} key={option}>
-              {options[option]} <code>{option}</code>
+              {varint === "primary" && options[option]} <code>{option}</code>
             </option>
           ))}
         </select>
@@ -445,4 +526,4 @@ const SelectBox = ({
   );
 };
 
-export default Modal;
+export default SettingsModal;

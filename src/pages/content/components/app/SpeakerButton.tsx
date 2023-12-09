@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import { Speaker, SpeakerOff } from "./Icons";
 import { getStorageValue } from "../../utils";
 
-const SpeakarButton = () => {
+const SpeakerButton = () => {
   const btnRef = useRef(null);
   const synthesisRef = useRef(null);
   const utteranceRef = useRef(null);
@@ -99,4 +99,4 @@ const SpeakarButton = () => {
   );
 };
 
-export default SpeakarButton;
+export default SpeakerButton;
