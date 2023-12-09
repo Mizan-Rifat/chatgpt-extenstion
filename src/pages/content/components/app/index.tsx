@@ -96,10 +96,19 @@ document.body.append(modalContainer);
 (async () => {
   const voiceLang = await getStorageValue("voice_lang");
   const speechLang = await getStorageValue("speech_lang");
+  const autoSubmit = await getStorageValue("auto_submit");
+  const autoSubmitDelay = await getStorageValue("auto_submit_delay");
+
   if (!voiceLang) {
     setStorageValue({ voice_lang: "en-US" });
   }
   if (!speechLang) {
     setStorageValue({ speech_lang: "en-US" });
+  }
+  if (!autoSubmit) {
+    setStorageValue({ auto_submit: false });
+  }
+  if (!autoSubmitDelay) {
+    setStorageValue({ auto_submit_delay: 2 });
   }
 })();

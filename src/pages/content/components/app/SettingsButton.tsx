@@ -1,22 +1,37 @@
-import React, { useState } from "react";
-import { Language } from "./Icons";
-import Modal from "./Modal";
+import React, { useEffect, useState } from "react";
+import { Cog } from "./Icons";
+import SettingsModal from "./SettingsModal";
+import { getStorageValue, setStorageValue } from "../../utils";
 
 const SettingsButton = () => {
   const [openModal, setOpenModal] = useState(false);
+
+  const handleModalClose = () => {
+    setStorageValue({ first_showed: true });
+    setOpenModal(false);
+  };
+
+  useEffect(() => {
+    (async () => {
+      const firstShowed = await getStorageValue("first_showed");
+      if (!firstShowed) {
+        setOpenModal(true);
+      }
+    })();
+  }, []);
+
   return (
     <>
       <button
-        className="fixed z-10 flex items-center justify-center rounded-full bottom-3 right-12 text-ext-secondary bg-ext-primary hover:bg-ext-primary-dark flex justify-center items-center h-[26px] w-[26px]"
+        className="fixed z-10 flex items-center justify-center rounded-full top-[9px] md:top-4 right-8 md:right-14 text-ext-secondary bg-ext-primary hover:bg-ext-primary-dark flex justify-center items-center h-[26px] px-3 mr-2"
         type="button"
         onClick={() => setOpenModal(true)}
       >
-        {/* <div className="h-5 w-5 flex justify-center items-center"> */}
-        <Language />
-        {/* </div> */}
+        <span className="font-bold text-sm mr-1 hidden sm:block">VoiceGPT</span>{" "}
+        <Cog />
       </button>
 
-      <Modal open={openModal} handleClose={() => setOpenModal(false)} />
+      <SettingsModal open={openModal} handleClose={handleModalClose} />
     </>
   );
 };
