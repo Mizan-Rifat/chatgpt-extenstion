@@ -25,7 +25,7 @@ const manifest: chrome.runtime.ManifestV3 = {
   },
   content_scripts: [
     {
-      matches: ["https://chat.openai.com/*", "http://chat.openai.com/*"],
+      matches: ["https://chatgpt.com/*", "http://chatgpt.com/*"],
       js: ["src/pages/content/index.js"],
       // KEY for cache invalidation
       css: ["assets/css/contentStyle<KEY>.chunk.css"],
