@@ -3,7 +3,7 @@ reloadOnUpdate("pages/background");
 reloadOnUpdate("pages/content/style.scss");
 
 chrome.tabs.onUpdated.addListener((tabId, info, tab) => {
-  if (info.title && tab.url && tab.url.includes("chat.openai.com")) {
+  if (info.title && tab.url && tab.url.includes("chatgpt.com")) {
     let chatId = tab.url.split("/").pop();
     if (!chatId) {
       chatId = "home";
