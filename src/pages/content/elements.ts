@@ -1,11 +1,7 @@
 type Selectors = {
   textarea: string;
-  groups: string;
-  speakerBtnContainer: string;
   micBtnContainer: string;
   sendButton: string;
-  actionButtons: string;
-  main: string;
   stopGenerating: string;
 };
 
@@ -15,17 +11,12 @@ type Elements = {
 
 export const selectors: Selectors = {
   textarea: "#prompt-textarea",
-  groups: '[data-testid^="conversation-turn-"]',
-  speakerBtnContainer: ".speaker-btn-container",
   micBtnContainer: ".mic-btn-container",
-  sendButton: "[data-testid='send-button']",
-  actionButtons: ".visible",
-  main: "main",
+  sendButton: "[data-testid='fruitjuice-send-button']",
   stopGenerating: `[aria-label="Stop generating"]`,
 };
 
 export const classNames = {
-  speakerBtnContainer: "speaker-btn-container",
   micBtnContainer: "mic-btn-container",
 };
 
