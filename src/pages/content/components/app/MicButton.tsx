@@ -15,9 +15,10 @@ declare global {
   }
 }
 
-const isMac = window.navigator.userAgent.includes("Mac");
-
 const getTextArea = () => elements().textarea as HTMLInputElement;
+
+const toggeleKey = "q";
+const pttKey = "s";
 
 export default function MicButton() {
   const textAreaValue = useRef("");
@@ -139,12 +140,12 @@ export default function MicButton() {
       stopListening();
     }
 
-    if (event.ctrlKey && event.key === "s") {
+    if (event.ctrlKey && event.key === pttKey) {
       event.preventDefault();
       startListening();
     }
 
-    if (event.ctrlKey && ((isMac && event.key === "b") || event.key === " ")) {
+    if (event.ctrlKey && event.key === toggeleKey) {
       event.preventDefault();
       if (listeningRef.current) {
         stopListening();
@@ -155,9 +156,9 @@ export default function MicButton() {
   };
 
   const handleKeyUp = async (event) => {
-    if (event.ctrlKey && event.key === "s") {
-      const auto_submit = await getStorageValue("auto_submit");
+    if (event.ctrlKey && event.key === pttKey) {
       event.preventDefault();
+      const auto_submit = await getStorageValue("auto_submit");
       stopListening();
       if (auto_submit) {
         const { sendButton } = elements();
@@ -250,24 +251,34 @@ export default function MicButton() {
   }, []);
 
   return (
-    <div className="relative">
-      <button
-        disabled={disable}
-        type="button"
-        className={classNames(
-          "absolute rounded-md h-[30px] w-[30px] md:bottom-3 right-12 disabled:text-gray-100 bottom-1.5 transition-colors disabled:opacity-40 recorder-container flex justify-center items-center text-ext-secondary bg-ext-primary hover:bg-ext-primary-dark"
-        )}
-        onClick={handleClick}
-      >
-        <span
-          className={classNames({
-            outer: listening,
-          })}
-        />
-        <span className="icon-microphone">
-          <Microphone />
-        </span>
-      </button>
-    </div>
+    <button
+      disabled={disable}
+      type="button"
+      className={classNames(
+        "rounded-md h-[30px] mb-[5px] w-[30px] disabled:text-gray-100 transition-colors disabled:opacity-40 recorder-container flex justify-center items-center text-ext-secondary bg-ext-primary hover:bg-ext-primary-dark"
+      )}
+      onClick={handleClick}
+    >
+      {/* width: 14px;
+  height: 14px;
+  right: 8px;
+  top: 8px;
+  -webkit-transform: scale(1);
+  border-radius: 100%;
+  position: absolute;
+  background-color: transparent;
+  border: 1px solid #ffffdf;
+  transition: 1.5s all ease;
+  -webkit-animation: woong 1.5s infinite; */}
+      <span
+        className={classNames({
+          "h-[14px] w-[14px] right-2 top-2 rounded-full absolute bg-transparent border border-[#ffffdf] animate-woong":
+            listening,
+        })}
+      />
+      <span className="icon-microphone">
+        <Microphone />
+      </span>
+    </button>
   );
 }

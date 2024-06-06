@@ -43,9 +43,9 @@ const ShortCuts = () => {
               <strong>Keyboard Shortcuts:</strong>
               <ul className="ml-2 mt-1">
                 <li>
-                  <b>Ctrl + Space (Ctrl + B in Mac) : </b> Initiates or stops
-                  the listening function, giving you seamless control over when
-                  VoiceGPT actively awaits your voice input.
+                  <b>Ctrl + Q : </b> Initiates or stops the listening function,
+                  giving you seamless control over when VoiceGPT actively awaits
+                  your voice input.
                 </li>
                 <li>
                   <b>Ctrl + S : </b> Holding down Ctrl + S triggers the Hold and
