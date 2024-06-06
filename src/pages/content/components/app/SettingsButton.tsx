@@ -23,7 +23,7 @@ const SettingsButton = () => {
   return (
     <>
       <button
-        className="fixed z-10 flex items-center justify-center rounded-full top-[9px] md:top-4 right-8 md:right-14 text-ext-secondary bg-ext-primary hover:bg-ext-primary-dark flex justify-center items-center h-[26px] px-3 mr-2"
+        className="fixed z-10 flex items-center justify-center rounded-full top-4 right-12 md:right-16 text-ext-secondary bg-ext-primary hover:bg-ext-primary-dark flex justify-center items-center h-[26px] px-3 mr-2"
         type="button"
         onClick={() => setOpenModal(true)}
       >

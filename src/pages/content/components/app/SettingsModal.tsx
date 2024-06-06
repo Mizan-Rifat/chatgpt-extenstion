@@ -137,7 +137,7 @@ const SettingsModal = ({
               <div className="flex">
                 <div className="flex items-center">
                   <div className="flex flex-col gap-1 text-center sm:text-left">
-                    <h2 className="text-lg font-medium leading-6 text-gray-900 dark:text-gray-200">
+                    <h2 className="text-lg font-semibold leading-6 text-token-text-primary">
                       VoiceGPT
                     </h2>
                   </div>

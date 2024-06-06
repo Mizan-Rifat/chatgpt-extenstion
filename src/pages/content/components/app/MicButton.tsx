@@ -15,9 +15,10 @@ declare global {
   }
 }
 
-const isMac = window.navigator.userAgent.includes("Mac");
-
 const getTextArea = () => elements().textarea as HTMLInputElement;
+
+const toggeleKey = "q";
+const pttKey = "s";
 
 export default function MicButton() {
   const textAreaValue = useRef("");
@@ -139,12 +140,12 @@ export default function MicButton() {
       stopListening();
     }
 
-    if (event.ctrlKey && event.key === "s") {
+    if (event.ctrlKey && event.key === pttKey) {
       event.preventDefault();
       startListening();
     }
 
-    if (event.ctrlKey && ((isMac && event.key === "b") || event.key === " ")) {
+    if (event.ctrlKey && event.key === toggeleKey) {
       event.preventDefault();
       if (listeningRef.current) {
         stopListening();
@@ -155,9 +156,9 @@ export default function MicButton() {
   };
 
   const handleKeyUp = async (event) => {
-    if (event.ctrlKey && event.key === "s") {
-      const auto_submit = await getStorageValue("auto_submit");
+    if (event.ctrlKey && event.key === pttKey) {
       event.preventDefault();
+      const auto_submit = await getStorageValue("auto_submit");
       stopListening();
       if (auto_submit) {
         const { sendButton } = elements();
