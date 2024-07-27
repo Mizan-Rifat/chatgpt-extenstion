@@ -12,7 +12,7 @@ type Elements = {
 export const selectors: Selectors = {
   textarea: "#prompt-textarea",
   micBtnContainer: ".mic-btn-container",
-  sendButton: "[data-testid='fruitjuice-send-button']",
+  sendButton: "[data-testid='send-button']",
   stopGenerating: `[aria-label="Stop generating"]`,
 };
 
